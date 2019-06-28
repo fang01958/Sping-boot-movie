@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fang.movie.mapper.FilmMapper">
+  <resultMap id="BaseResultMap" type="com.fang.movie.entity.Film">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="film_name" jdbcType="VARCHAR" property="filmName" />
+    <result column="film_code" jdbcType="VARCHAR" property="filmCode" />
+    <result column="film_pic" jdbcType="VARCHAR" property="filmPic" />
+    <result column="film_type" jdbcType="VARCHAR" property="filmType" />
+    <result column="film_time" jdbcType="VARCHAR" property="filmTime" />
+    <result column="film_show_time" jdbcType="VARCHAR" property="filmShowTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.fang.movie.entity.Film">
+    <result column="plot" jdbcType="LONGVARCHAR" property="plot" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, film_name, film_code, film_pic, film_type, film_time, film_show_time
+  </sql>
+  <sql id="Blob_Column_List">
+    plot
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from spider_film
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from spider_film
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fang.movie.entity.Film">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into spider_film (film_name, film_code, film_pic, 
+      film_type, film_time, film_show_time, 
+      plot)
+    values (#{filmName,jdbcType=VARCHAR}, #{filmCode,jdbcType=VARCHAR}, #{filmPic,jdbcType=VARCHAR}, 
+      #{filmType,jdbcType=VARCHAR}, #{filmTime,jdbcType=VARCHAR}, #{filmShowTime,jdbcType=VARCHAR}, 
+      #{plot,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fang.movie.entity.Film">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into spider_film
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="filmName != null">
+        film_name,
+      </if>
+      <if test="filmCode != null">
+        film_code,
+      </if>
+      <if test="filmPic != null">
+        film_pic,
+      </if>
+      <if test="filmType != null">
+        film_type,
+      </if>
+      <if test="filmTime != null">
+        film_time,
+      </if>
+      <if test="filmShowTime != null">
+        film_show_time,
+      </if>
+      <if test="plot != null">
+        plot,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="filmName != null">
+        #{filmName,jdbcType=VARCHAR},
+      </if>
+      <if test="filmCode != null">
+        #{filmCode,jdbcType=VARCHAR},
+      </if>
+      <if test="filmPic != null">
+        #{filmPic,jdbcType=VARCHAR},
+      </if>
+      <if test="filmType != null">
+        #{filmType,jdbcType=VARCHAR},
+      </if>
+      <if test="filmTime != null">
+        #{filmTime,jdbcType=VARCHAR},
+      </if>
+      <if test="filmShowTime != null">
+        #{filmShowTime,jdbcType=VARCHAR},
+      </if>
+      <if test="plot != null">
+        #{plot,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fang.movie.entity.Film">
+    update spider_film
+    <set>
+      <if test="filmName != null">
+        film_name = #{filmName,jdbcType=VARCHAR},
+      </if>
+      <if test="filmCode != null">
+        film_code = #{filmCode,jdbcType=VARCHAR},
+      </if>
+      <if test="filmPic != null">
+        film_pic = #{filmPic,jdbcType=VARCHAR},
+      </if>
+      <if test="filmType != null">
+        film_type = #{filmType,jdbcType=VARCHAR},
+      </if>
+      <if test="filmTime != null">
+        film_time = #{filmTime,jdbcType=VARCHAR},
+      </if>
+      <if test="filmShowTime != null">
+        film_show_time = #{filmShowTime,jdbcType=VARCHAR},
+      </if>
+      <if test="plot != null">
+        plot = #{plot,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.fang.movie.entity.Film">
+    update spider_film
+    set film_name = #{filmName,jdbcType=VARCHAR},
+      film_code = #{filmCode,jdbcType=VARCHAR},
+      film_pic = #{filmPic,jdbcType=VARCHAR},
+      film_type = #{filmType,jdbcType=VARCHAR},
+      film_time = #{filmTime,jdbcType=VARCHAR},
+      film_show_time = #{filmShowTime,jdbcType=VARCHAR},
+      plot = #{plot,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fang.movie.entity.Film">
+    update spider_film
+    set film_name = #{filmName,jdbcType=VARCHAR},
+      film_code = #{filmCode,jdbcType=VARCHAR},
+      film_pic = #{filmPic,jdbcType=VARCHAR},
+      film_type = #{filmType,jdbcType=VARCHAR},
+      film_time = #{filmTime,jdbcType=VARCHAR},
+      film_show_time = #{filmShowTime,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="listFilms" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from spider_film
+  </select>
+
+  <select id="listFilmByCinema" resultMap="BaseResultMap">
+    select id,film_name, sf.film_code, film_pic, film_type, film_time, film_show_time
+    from spider_film sf,spider_film_cinema sfc
+    where sf.film_code = sfc.film_code
+    and sfc.cinema_code=#{cinemaCode}
+
+  </select>
+
+</mapper>

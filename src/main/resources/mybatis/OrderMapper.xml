@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fang.movie.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.fang.movie.entity.Order">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="film_id" jdbcType="INTEGER" property="filmId" />
+    <result column="cinema_id" jdbcType="INTEGER" property="cinemaId" />
+    <result column="amount" jdbcType="VARCHAR" property="amount" />
+    <result column="film_schedule_id" jdbcType="INTEGER" property="filmScheduleId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, film_id, cinema_id, amount, film_schedule_id, status, modify_time, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from spider_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from spider_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fang.movie.entity.Order">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into spider_order (film_id, cinema_id, amount, 
+      film_schedule_id, status, modify_time, 
+      create_time)
+    values (#{filmId,jdbcType=INTEGER}, #{cinemaId,jdbcType=INTEGER}, #{amount,jdbcType=VARCHAR}, 
+      #{filmScheduleId,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{modifyTime,jdbcType=TIMESTAMP}, 
+      #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fang.movie.entity.Order">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into spider_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="filmId != null">
+        film_id,
+      </if>
+      <if test="cinemaId != null">
+        cinema_id,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="filmScheduleId != null">
+        film_schedule_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="filmId != null">
+        #{filmId,jdbcType=INTEGER},
+      </if>
+      <if test="cinemaId != null">
+        #{cinemaId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="filmScheduleId != null">
+        #{filmScheduleId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fang.movie.entity.Order">
+    update spider_order
+    <set>
+      <if test="filmId != null">
+        film_id = #{filmId,jdbcType=INTEGER},
+      </if>
+      <if test="cinemaId != null">
+        cinema_id = #{cinemaId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=VARCHAR},
+      </if>
+      <if test="filmScheduleId != null">
+        film_schedule_id = #{filmScheduleId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fang.movie.entity.Order">
+    update spider_order
+    set film_id = #{filmId,jdbcType=INTEGER},
+      cinema_id = #{cinemaId,jdbcType=INTEGER},
+      amount = #{amount,jdbcType=VARCHAR},
+      film_schedule_id = #{filmScheduleId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateStatus">
+    update spider_order
+    set status = #{newStatus},modify_time = now()
+    where id = #{orderId} and status = #{oldStatus}
+  </update>
+
+</mapper>

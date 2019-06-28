@@ -1,0 +1,180 @@
+<html>
+
+    <head>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+
+
+
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        &
+        :last-child {
+            margin-bottom: 0;
+        }
+        }
+        .el-col {
+            border-radius: 4px;
+        }
+        .bg-purple-dark {
+            background: #99a9bf;
+        }
+        .bg-purple {
+            background: #d3dce6;
+        }
+        .bg-purple-light {
+            background: #e5e9f2;
+        }
+        .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+        }
+        .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+        }
+    </style>
+
+
+</head>
+
+
+    <body>
+        <div id="app">
+
+        <el-row>
+            <el-col :span="3">
+                <div class="grid-content">
+                    <img :src="'/picture/' + film.filmPic">
+                </div>
+            </el-col>
+            <el-col :span="20">
+                <div class="grid-content">
+                    <el-col :span="24"><div class="grid-content">{{film.filmName}}</div></el-col>
+                    <el-col :span="24"><div class="grid-content">{{film.filmType}}</div></el-col>
+                    <el-col :span="24"><div class="grid-content">{{film.filmTime}}</div></el-col>
+                    <el-col :span="24"><div class="grid-content">{{film.filmShowTime}}</div></el-col>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-divider></el-divider>
+
+         <div>
+             <el-row>
+                 <el-col :span="2">
+                     <div class="grid-content">
+                         <span style="color:#67C23A">行政区域</span>
+                     </div>
+                 </el-col>
+                 <el-col :span="1">
+                     <div class="grid-content">
+                         <el-link @click="areaClink(-1)">全部</el-link>
+                     </div>
+                 </el-col>
+                 <el-col :span="21">
+                     <div class="grid-content">
+                         <el-row>
+                             <el-col :span="2" v-for="area in Areas">
+                                 <div class="grid-content">
+                                     <el-link @click="areaClink(area.areaCode)">{{area.areaName}}</el-link>
+                                 </div>
+                             </el-col>
+                         </el-row>
+                     </div>
+                 </el-col>
+             </el-row>
+         </div>
+
+            <el-divider></el-divider>
+
+         <div>
+             <el-tag style="font-size:18px">影院列表</el-tag><br>
+             <el-row v-for="filmCinema in filmCinemas">
+                 <el-col :span="20">
+                     <div class="grid-content">
+                        <span>{{filmCinema.cinemaName}}</span><br>
+                         <span style="color:#909399;font-size: 12px">{{filmCinema.cinemaAddress}}</span>
+                     </div>
+                 </el-col>
+                 <el-col :span="4">
+                     <div class="grid-content">
+                         <a :href ="'/toCinemaInfo/' + film.id + '/' + filmCinema.cinemaCode" target="_blank">
+                             <el-button type="danger">特惠购票</el-button>
+                         </a>
+                     </div>
+                 </el-col>
+
+             </el-row>
+
+
+
+
+
+         </div>
+
+    </div>
+
+    </body>
+
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            film: {},
+            filmId:[[${filmId}]],
+            Areas:[],
+            filmCinemas:[],
+            areaCode:-1
+        },
+        created : function () {
+            this.loadFilms();
+            this.loadAreas();
+            this.loadFilmCinema();
+        },
+        methods:{
+            loadFilms:function () {
+                var that = this;
+                axios.get('/film/' + that.filmId)
+                    .then(function (response) {
+                        that.film = response.data.data;
+                    })
+            },
+
+            loadAreas:function () {
+                var that = this;
+                axios.get('/film/listAreas')
+                    .then(function (response) {
+                        that.Areas = response.data.data;
+                    })
+            },
+
+            areaClink:function (areaCode) {
+                this.areaCode = areaCode;
+                this.loadFilmCinema();
+            },
+
+            loadFilmCinema:function () {
+                var that = this;
+                axios.get('/film/listFilmCinema/' + that.filmId + '/' + that.areaCode)
+                    .then(function (response) {
+                        that.filmCinemas = response.data.data;
+                    })
+            }
+
+
+        }
+
+    })
+
+</script>
+
+
+</html>

@@ -1,0 +1,151 @@
+<html>
+
+    <head>
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <!-- import Vue before Element -->
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+        <!-- import JavaScript -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+
+
+
+        <style>
+            .el-row {
+                margin-bottom: 20px;
+            &
+            :last-child {
+                margin-bottom: 0;
+            }
+            }
+            .el-col {
+                border-radius: 4px;
+            }
+            .bg-purple-dark {
+                background: #99a9bf;
+            }
+            .bg-purple {
+                background: #d3dce6;
+            }
+            .bg-purple-light {
+                background: #e5e9f2;
+            }
+            .grid-content {
+                border-radius: 4px;
+                min-height: 36px;
+            }
+            .row-bg {
+                padding: 10px 0;
+                background-color: #f9fafc;
+            }
+        </style>
+
+
+    </head>
+
+        <body>
+
+        <div id="app">
+
+            <el-row>
+                <el-col :span="3">
+                    <div class="grid-content">
+                        <img :src="'/picture/' + film.filmPic">
+                    </div>
+                </el-col>
+                <el-col :span="20">
+                    <div class="grid-content">
+                        <el-col :span="24"><div class="grid-content">{{film.filmName}}</div></el-col>
+                        <el-col :span="24"><div class="grid-content">{{film.filmType}}</div></el-col>
+                        <el-col :span="24"><div class="grid-content">{{film.filmTime}}</div></el-col>
+                        <el-col :span="24"><div class="grid-content">{{film.filmShowTime}}</div></el-col>
+
+                        <el-col :span="24">
+                            <div class="grid-content">
+                                <a :href ="'/toFilmCinema/' + film.id " target="_blank">
+                                    <el-button type="danger">特惠购票</el-button>
+                                </a>
+                            </div>
+                        </el-col>
+                    </div>
+                </el-col>
+            </el-row>
+
+            <el-divider></el-divider>
+
+            <div>
+                <el-tag>剧情简介</el-tag>
+                <el-card class="box-card">
+                   {{film.plot}}
+                </el-card>
+            </div>
+
+            <el-divider></el-divider>
+
+            <div>
+                <el-tag>导演</el-tag>
+                <el-row>
+                    <el-col :span="6" v-for = "director in filmActors.directors">
+                        <div class="grid-content">
+                            <img :src="'/picture/' + director.actorPic"><br>
+                            {{director.actorName}}
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+
+            <el-divider></el-divider>
+            <div>
+                <el-tag>演员</el-tag>
+                <el-row>
+                    <el-col :span="4" v-for = "actor in filmActors.actors">
+                        <div class="grid-content">
+                            <img :src="'/picture/' + actor.actorPic"><br>
+                            {{actor.actorName}}
+                        </div>
+                    </el-col>
+
+                </el-row>
+            </div>
+
+
+        </div>
+        </body>
+
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            film: {},
+            filmId:[[${filmId}]],
+            filmActors:""
+        },
+        created : function () {
+            this.loadFilms();
+            this.loadFilmActor();
+        },
+        methods:{
+            loadFilms:function () {
+                var that = this;
+                axios.get('/film/' + that.filmId)
+                    .then(function (response) {
+                        that.film = response.data.data;
+                    })
+            },
+
+            loadFilmActor:function () {
+                var that = this;
+                axios.get('/film/actor/' + that.filmId)
+                    .then(function (response) {
+                        that.filmActors = response.data.data;
+                    })
+            }
+        }
+    })
+
+</script>
+
+
+</html>

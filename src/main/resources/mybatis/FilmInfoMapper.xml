@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fang.movie.mapper.FilmInfoMapper">
+  <resultMap id="BaseResultMap" type="com.fang.movie.entity.FilmInfo">
+    <result column="film_id" jdbcType="INTEGER" property="filmId" />
+    <result column="actor_name" jdbcType="VARCHAR" property="actorName" />
+    <result column="actor_type" jdbcType="INTEGER" property="actorType" />
+    <result column="actor_pic" jdbcType="VARCHAR" property="actorPic" />
+  </resultMap>
+  <insert id="insert" parameterType="com.fang.movie.entity.FilmInfo">
+    insert into spider_film_info (film_id, actor_name, actor_type, 
+      actor_pic)
+    values (#{filmId,jdbcType=INTEGER}, #{actorName,jdbcType=VARCHAR}, #{actorType,jdbcType=INTEGER}, 
+      #{actorPic,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fang.movie.entity.FilmInfo">
+    insert into spider_film_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="filmId != null">
+        film_id,
+      </if>
+      <if test="actorName != null">
+        actor_name,
+      </if>
+      <if test="actorType != null">
+        actor_type,
+      </if>
+      <if test="actorPic != null">
+        actor_pic,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="filmId != null">
+        #{filmId,jdbcType=INTEGER},
+      </if>
+      <if test="actorName != null">
+        #{actorName,jdbcType=VARCHAR},
+      </if>
+      <if test="actorType != null">
+        #{actorType,jdbcType=INTEGER},
+      </if>
+      <if test="actorPic != null">
+        #{actorPic,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="queryFilmInfo" resultMap="BaseResultMap">
+    select * from spider_film_info where film_id = #{filmId}
+    <if test="actorType != null">
+      and actor_type = #{actorType}
+    </if>
+  </select>
+
+</mapper>

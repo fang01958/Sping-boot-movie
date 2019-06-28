@@ -1,0 +1,95 @@
+<html>
+
+    <head>
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <!-- import Vue before Element -->
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+        <!-- import JavaScript -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+
+
+
+        <style>
+            .el-row {
+                margin-bottom: 20px;
+            &
+            :last-child {
+                margin-bottom: 0;
+            }
+            }
+            .el-col {
+                border-radius: 4px;
+            }
+            .bg-purple-dark {
+                background: #99a9bf;
+            }
+            .bg-purple {
+                background: #d3dce6;
+            }
+            .bg-purple-light {
+                background: #e5e9f2;
+            }
+            .grid-content {
+                border-radius: 4px;
+                min-height: 36px;
+            }
+            .row-bg {
+                padding: 10px 0;
+                background-color: #f9fafc;
+            }
+        </style>
+
+
+    </head>
+
+    <body>
+
+        <div id="app">
+
+            <el-row>
+                    <el-col :span="4" v-for="film in films">
+                        <div class="grid-content "></div>
+                        <el-link :href ="'/toFilmInfo/' + film.id " target="_blank">
+                            <el-image
+                                    style="width: 200px; height: 250px"
+                                    :src="'/picture/' + film.filmPic"
+                                    :fit="fit">
+                            </el-image><br>
+                            {{film.filmName}}
+                        </el-link>
+                    </el-col>
+            </el-row>
+        </div>
+
+
+
+    </body>
+
+    <script>
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                films: []
+            },
+            created : function () {
+                this.loadFilms();
+            },
+            methods:{
+                loadFilms:function () {
+                    var that = this;
+                    axios.get('/film/listFilms')
+                        .then(function (response) {
+                            that.films = response.data.data;
+                        })
+                }
+
+            }
+        })
+
+    </script>
+
+
+</html>

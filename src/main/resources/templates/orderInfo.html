@@ -1,0 +1,173 @@
+<html>
+
+<head>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+
+
+
+    <style>
+        .el-row {
+            margin-bottom: 20px;
+        &
+        :last-child {
+            margin-bottom: 0;
+        }
+        }
+        .el-col {
+            border-radius: 4px;
+        }
+        .bg-purple-dark {
+            background: #99a9bf;
+        }
+        .bg-purple {
+            background: #d3dce6;
+        }
+        .bg-purple-light {
+            background: #e5e9f2;
+        }
+        .grid-content {
+            border-radius: 4px;
+            min-height: 36px;
+        }
+        .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+        }
+    </style>
+
+
+</head>
+
+<body>
+
+<div id="app">
+
+    <div id="payFormDiv" v-html="payForm"></div>
+
+    <el-row>
+        <el-col :span="3">
+            <div class="grid-content">
+                <img :src="'/picture/' + film.filmPic">
+            </div>
+        </el-col>
+
+        <el-col :span="21">
+            <div class="grid-content">
+                <el-row>
+                    <el-col :span="24"><div class="grid-content">{{film.filmName}}</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24"><div class="grid-content">时长：{{film.filmTime}}</div></el-col>
+                </el-row>
+                <el-row>
+                    <el-col :span="24"><div class="grid-content">类型：{{film.filmType}}</div></el-col>
+                </el-row>
+            </div>
+        </el-col>
+    </el-row>
+
+    <el-row>
+        <el-col :span="24"><div class="grid-content">影院：{{cinemaInfo.cinemaName}}</div></el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24"><div class="grid-content">影厅：{{sceneInfo.hall}}</div></el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24"><div class="grid-content">版本：{{sceneInfo.language}}</div></el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24"><div class="grid-content">场次：{{sceneInfo.showTime}}</div></el-col>
+    </el-row>
+    <el-row>
+        <el-col :span="24"><div class="grid-content">票价：￥{{sceneInfo.price}}/张</div></el-col>
+    </el-row>
+
+    <el-divider></el-divider>
+
+    <el-row>
+        <el-col :span="1"><div class="grid-content">座位：</div></el-col>
+        <el-col :span="22">
+            <div class="grid-content">
+                <el-tag
+                        v-for="seatId in formatSelectedSeatIds">
+                    {{seatId.split('-')[0] + '排' + seatId.split('-')[1] + '座'}}
+                </el-tag>
+            </div>
+        </el-col>
+    </el-row>
+
+    <el-row>
+        <el-col :span="24">
+            <div class="grid-content">
+                <el-tag type="green">支付成功</el-tag>
+            </div>
+        </el-col>
+    </el-row>
+
+
+</div>
+
+
+</body>
+
+<script>
+
+    var app = new Vue({
+        el: '#app',
+        data: {
+            film: {},
+            filmId:[[${filmId}]],
+            sceneId:[[${sceneId}]],
+            cinemaCode:[[${cinemaCode}]],
+            sceneInfo:[],
+            cinemaInfo:[],
+            SelectedSeatIds:'[[${seats}]]',
+            payForm:''
+        },
+        created : function () {
+            this.loadFilms();
+            this.loadScene();
+            this.loadCinemaInfo();
+        },
+
+        computed : {
+            formatSelectedSeatIds : function () {
+                return this.SelectedSeatIds.split(",");
+            }
+        },
+
+        methods:{
+            loadFilms:function () {
+                var that = this;
+                axios.get('/film/' + that.filmId)
+                    .then(function (response) {
+                        that.film = response.data.data;
+                    })
+            },
+            loadScene:function () {
+                var that = this;
+                axios.get('/film/querySence/' + that.sceneId)
+                    .then(function (response) {
+                        that.sceneInfo= response.data.data;
+                    })
+            },
+            loadCinemaInfo : function () {
+                var that = this;
+                axios.get('/cinema/queryCinema/' + that.cinemaCode)
+                    .then(function (response) {
+                        that.cinemaInfo= response.data.data;
+                    })
+            }
+        }
+    })
+
+</script>
+
+
+</html>
