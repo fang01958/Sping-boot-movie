@@ -52,4 +52,25 @@ public class OrderService {
             throw new MyException("异步处理失败");
         }
     }
+
+    public void processQueryOrder(Order order,String amount){
+        //校验金额
+        if (Double.parseDouble(order.getAmount()) != Double.parseDouble(amount)){
+            System.out.println(order.getAmount() + "amount=" + amount);
+            throw new MyException("订单金额不相等");
+        }
+
+        //修改订单状态
+        int rows = orderMapper.updateStatus(order.getId(), order.getStatus(), OrderStatusEnum.支付成功.getK());
+        if (1 != rows){
+            throw new MyException("异步处理失败");
+        }
+    }
+
+    public void processCancelOrder(Order order){
+        int rows = orderMapper.updateStatus(order.getId(), order.getStatus(), OrderStatusEnum.取消订单.getK());
+        if (1 != rows){
+            throw new MyException("订单取消失败");
+        }
+    }
 }

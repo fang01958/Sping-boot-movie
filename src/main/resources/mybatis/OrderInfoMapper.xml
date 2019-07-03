@@ -95,4 +95,20 @@
     select <include refid="Base_Column_List"></include>
     from spider_orderInfo where order_id = #{orderId}
   </select>
+
+  <select id="listSelectedSeats" resultMap="BaseResultMap">
+    select soi.seat_col,soi.seat_row,soi.order_id from spider_order so join spider_orderInfo soi
+    on so.id = soi.order_id
+    where so.film_schedule_id =#{sceneId}
+  </select>
+
+  <select id="loadSelectedSeats" resultMap="BaseResultMap">
+    select soi.seat_col,soi.seat_row,soi.order_id
+    from spider_order so join spider_orderInfo soi
+    on so.id = soi.order_id
+    where so.film_schedule_id =#{sceneId}
+    and soi.seat_row = #{row} and soi.seat_col = #{col}
+    limit 1;
+  </select>
+
 </mapper>

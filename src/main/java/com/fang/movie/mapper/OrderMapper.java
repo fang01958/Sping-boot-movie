@@ -1,10 +1,8 @@
 package com.fang.movie.mapper;
-
 import com.fang.movie.entity.Order;
-import com.fang.movie.entity.OrderInfo;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Date;
 import java.util.List;
 
 public interface OrderMapper {
@@ -21,5 +19,9 @@ public interface OrderMapper {
     int updateByPrimaryKey(Order record);
 
     int updateStatus(@Param("orderId") int orderId,@Param("oldStatus") int oldStatus,@Param("newStatus") int newStatus);
+
+    List<Order> listOrder(@Param("status") int status);
+
+    List<Order> listOrder4Cancel(@Param("status") int status, @Param("deadTime") Date deadTime);
 
 }

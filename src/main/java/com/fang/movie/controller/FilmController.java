@@ -58,5 +58,10 @@ public class FilmController extends BaseController {
         return ResponseDTO.success(filmService.queryScene(sceneId));
     }
 
+    @RequestMapping(value = "/film/listSelectedSeats/{sceneId}",method = RequestMethod.GET)
+    public ResponseDTO listSelectedSeats(@PathVariable int sceneId){
+        return ResponseDTO.success(filmService.listSelectedSeats(sceneId));
+    }
+
 
 }

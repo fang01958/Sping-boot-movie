@@ -132,4 +132,19 @@
     where id = #{orderId} and status = #{oldStatus}
   </update>
 
+  <select id="listOrder" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"></include>
+    from spider_order where status =#{status}
+    order by create_time
+  </select>
+
+    <select id="listOrder4Cancel" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"></include>
+        from spider_order where status = #{status}
+        <![CDATA[
+        and create_time < #{deadTime}
+        ]]>
+        order by create_time
+    </select>
+
 </mapper>

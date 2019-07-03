@@ -1,11 +1,11 @@
 package com.fang.movie.handler;
-
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
-import com.fang.movie.emuns.OrderStatusEnum;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.fang.movie.entity.Film;
 import com.fang.movie.entity.Order;
 import com.fang.movie.exception.MyException;
@@ -47,6 +47,8 @@ public class AlipayHandler implements InitializingBean {
 
     private AlipayClient alipayClient;
 
+    public static final String TRADE_SUCCESS = "TRADE_SUCCESS";
+    public static final String TRADE_FINISHED = "TRADE_FINISHED";
 
 
     @Override
@@ -90,22 +92,54 @@ public class AlipayHandler implements InitializingBean {
             }
             //验签成功
             String trade_status = map.get("trade_status");
-            if (!"TRADE_SUCCESS".equals(trade_status) && !"TRADE_SUCCESS".equals(trade_status)){
+            if (!TRADE_SUCCESS.equals(trade_status) && !TRADE_FINISHED.equals(trade_status)){
                 throw new MyException("支付失败");
             }
-            String out_trade_no = map.get("out_trade_no");
+            String orderId = map.get("out_trade_no");
             String total_amount = map.get("total_amount");
             String app_id = map.get("app_id");
 
             if (!appid.equals(app_id)){
                 throw new MyException("appid不正确");
             }
-            System.out.println("验签成功");
-            orderService.processAlipayNotify(Integer.parseInt(out_trade_no),total_amount);
+
+            orderService.processAlipayNotify(Integer.parseInt(orderId),total_amount);
 
         } catch (AlipayApiException e) {
-            e.printStackTrace();
+            throw new MyException("支付宝异步通知处理异常");
         }
+
+    }
+
+    public void queryOrder(Order order){
+        alipayClient = new DefaultAlipayClient(payUrl,appid,MerchantPrivatekey,
+                "json","utf-8",alipayPublicKey,"RSA2");
+
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        request.setBizContent("{" +
+                "\"out_trade_no\":\""+ order.getId() +"\"" +
+                "  }");
+
+        try {
+            AlipayTradeQueryResponse response = alipayClient.execute(request);
+
+            if(!response.isSuccess()){
+                System.out.println("调用失败");
+                return;
+            }
+            String totalAmount = response.getTotalAmount();
+            String tradeStatus = response.getTradeStatus();
+
+            if (!TRADE_SUCCESS.equals(tradeStatus) && !TRADE_FINISHED.equals(tradeStatus)){
+                throw new MyException("支付失败");
+            }
+            orderService.processQueryOrder(order,totalAmount);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new MyException("阿里订单查询失败");
+        }
+
 
     }
 

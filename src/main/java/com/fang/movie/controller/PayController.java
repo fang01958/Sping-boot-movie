@@ -1,7 +1,4 @@
 package com.fang.movie.controller;
-import com.alipay.api.AlipayClient;
-import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.fang.movie.dto.ResponseDTO;
 import com.fang.movie.entity.Film;
 import com.fang.movie.entity.Order;
@@ -35,23 +32,30 @@ public class PayController extends BaseController {
     public ResponseDTO toPay(@PathVariable int filmId,@PathVariable String cinemaCode,
                              @PathVariable int sceneId, String seatInfo) {
 
-        //TODO 生成订单
+        //生成订单
         Order order = payService.createOrder(filmId, cinemaCode, sceneId, seatInfo);
         Film film = filmService.queryFilm(filmId);
 
+        //生成支付宝Url地址
         return ResponseDTO.success(alipayHandler.createPayform(order,film));
     }
 
     @RequestMapping(value = "/pay/alipayNotify")
     public void alipayNotify(HttpServletRequest request, HttpServletResponse response){
-        alipayHandler.processNotify(request.getParameterMap());
         try {
-            OutputStream os = response.getOutputStream();
-            os.write("success".getBytes());
-            os.flush();
-        } catch (Exception e) {
+            alipayHandler.processNotify(request.getParameterMap());
+
+            try {
+                OutputStream os = response.getOutputStream();
+                os.write("success".getBytes());
+                os.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
-
     }
+
+
 }

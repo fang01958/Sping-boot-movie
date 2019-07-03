@@ -1,7 +1,9 @@
 package com.fang.movie.service;
 import com.fang.movie.entity.*;
+import com.fang.movie.exception.MyException;
 import com.fang.movie.mapper.*;
 import com.fang.movie.util.MoneyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +14,7 @@ import java.util.Date;
 public class PayService {
 
     @Autowired
-    private FilmMapper filmMapper;
+    private RedisService redisService;
 
     @Autowired
     private OrderInfoMapper orderInfoMapper;
@@ -31,6 +33,10 @@ public class PayService {
     public Order createOrder(int filmId, String cinemaCode , int sceneId , String seatInfo){
         Cinema cinema = cinemaMapper.queryCienma(cinemaCode);
         FilmSchedule filmSchedule = filmScheduleMapper.selectByPrimaryKey(sceneId);
+        if (null == cinema || filmSchedule == null || StringUtils.isBlank(seatInfo) || StringUtils.isBlank(cinemaCode)){
+            throw new MyException("参数有异常");
+        }
+
         String[] seats = seatInfo.split(",");
         String amount = MoneyUtils.mul(String.valueOf(seats.length), filmSchedule.getPrice());
         Order order = new Order();
@@ -44,8 +50,22 @@ public class PayService {
         orderMapper.insert(order);
 
         for (String seat : seats) {
-            OrderInfo orderInfo = new OrderInfo();
             String[] seatRowCol = seat.split("-");
+
+            //防止并发
+            Boolean aBoolean = redisService.cacheSeatInfo(sceneId, Integer.parseInt(seatRowCol[0]), Integer.parseInt(seatRowCol[1]));
+            if (!aBoolean){
+                throw new MyException("座位号已被选中，请重新选择");
+            }
+
+            //查询数据有没有
+            OrderInfo info = orderInfoMapper.loadSelectedSeats(sceneId, Integer.parseInt(seatRowCol[0]), Integer.parseInt(seatRowCol[1]));
+
+            if (null != info){
+                throw new MyException("座位号已被选中，请重新选择");
+            }
+
+            OrderInfo orderInfo = new OrderInfo();
             orderInfo.setPrice(filmSchedule.getPrice());
             orderInfo.setOrderId(order.getId());
             orderInfo.setSeatRow(Integer.parseInt(seatRowCol[0]));

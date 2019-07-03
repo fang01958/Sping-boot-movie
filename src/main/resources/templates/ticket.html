@@ -161,13 +161,14 @@
             sceneInfo:[],
             cinemaInfo:[],
             seats:[],
-            SelectedSeatIds:[]
+            SelectedSeatIds:[],
+            listSelectedSeats:[]
         },
         created : function () {
             this.loadFilms();
             this.loadScene();
             this.loadCinemaInfo();
-            this.addSeats();
+            this.listSelectedBuySeats();
         },
         methods:{
             toSettlenment : function(){
@@ -191,6 +192,15 @@
             },
 
             chooseSeat : function(seatId){
+                let row = seatId.split('-')[0];
+                let col = seatId.split('-')[1];
+
+                for (let i = 0; i < this.listSelectedSeats.length; i++){
+                    if (this.listSelectedSeats[i].seatRow == row && this.listSelectedSeats[i].seatCol == col){
+                        return;
+                    }
+                }
+                let seat;
                 if (this.SelectedSeatIds.indexOf(seatId) != -1) {
                     seat = this.getSeat(seatId);
                     seat.imgUrl = '/pic/seat1.png';
@@ -202,13 +212,25 @@
                 this.SelectedSeatIds.push(seatId)
             },
 
+            checkBuyTicket : function(row,col){
+                for (let i = 0; i < this.listSelectedSeats.length; i++){
+                    if (this.listSelectedSeats[i].seatRow == row && this.listSelectedSeats[i].seatCol == col){
+                        return true;
+                    }
+                }
+            },
+
             addSeats : function(){
                 for (let i=1;i<=8;i++ ) {
                     for (let j=1;j<=8;j++){
+                        let imgUrlcalue = '/pic/seat1.png';
+                        if (this.checkBuyTicket(i,j)) {
+                            imgUrlcalue = '/pic/seat2.png';
+                        }
                         let seat = {
                             row : i,
                             clo : j,
-                            imgUrl : '/pic/seat1.png',
+                            imgUrl : imgUrlcalue,
                             id : i + '-' + j
                         };
                         this.seats.push(seat);
@@ -236,7 +258,17 @@
                     .then(function (response) {
                         that.cinemaInfo= response.data.data;
                     })
-            }
+            },
+
+            listSelectedBuySeats : function () {
+                var that = this;
+                axios.get('/film/listSelectedSeats/' + that.sceneId)
+                    .then(function (response) {
+                        that.listSelectedSeats= response.data.data;
+                        that.addSeats();
+                    })
+            },
+
         }
     })
 

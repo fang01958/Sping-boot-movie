@@ -66,13 +66,13 @@ public class PageController extends BaseController{
         request.setAttribute("sceneId",order.getFilmScheduleId());
         Cinema cinema = filmService.getCinema(order.getCinemaId());
         request.setAttribute("cinemaCode",cinema.getCinemaCode());
+
         List<OrderInfo> orderInfos = orderService.listOrderInfo(orderId);
         StringBuilder sx = new StringBuilder();
         for (OrderInfo orderInfo : orderInfos) {
             sx.append(orderInfo.getSeatRow()).append("-").append(orderInfo.getSeatCol()).append(",");
         }
         request.setAttribute("seats",sx.toString().substring(0,sx.length()-1));
-        System.out.println(sx.toString().substring(0,sx.length()-1));
         request.setAttribute("success",order.getStatus() == OrderStatusEnum.支付成功.getK());
 
         return "orderInfo";

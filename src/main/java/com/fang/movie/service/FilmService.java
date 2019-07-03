@@ -26,6 +26,9 @@ public class FilmService {
     @Autowired
     private FilmScheduleMapper filmScheduleMapper;
 
+    @Autowired
+    private OrderInfoMapper orderInfoMapper;
+
     public List<Film> listFilms(){
         return filmMapper.listFilms();
     }
@@ -76,5 +79,9 @@ public class FilmService {
 
     public Cinema getCinema(int cinemaID){
         return cinemaMapper.selectByPrimaryKey(cinemaID);
+    }
+
+    public List<OrderInfo> listSelectedSeats(int sceneId){
+        return orderInfoMapper.listSelectedSeats(sceneId);
     }
 }

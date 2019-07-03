@@ -1,5 +1,4 @@
 package com.fang.movie.mapper;
-
 import com.fang.movie.entity.OrderInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,5 +18,9 @@ public interface OrderInfoMapper {
     int updateByPrimaryKey(OrderInfo record);
 
     List<OrderInfo> listOrderInfo(@Param("orderId") int orderId);
+
+    List<OrderInfo> listSelectedSeats(int sceneId);
+
+    OrderInfo loadSelectedSeats(@Param("sceneId")int sceneId,@Param("row")int row,@Param("col")int col);
 
 }
