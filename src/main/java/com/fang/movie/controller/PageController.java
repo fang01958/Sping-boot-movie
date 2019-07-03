@@ -88,7 +88,8 @@ public class PageController extends BaseController{
             e.printStackTrace();
         }
 
-        try (FileInputStream fis = new FileInputStream("/Users/fang/IO/filmPic/" + fileName)){
+//        try (FileInputStream fis = new FileInputStream("/Users/fang/IO/filmPic/" + fileName)){
+        try (FileInputStream fis = new FileInputStream("/opt/filmPic/" + fileName)){
             byte[] buff = new byte[1024];
             int length = -1;
             while (-1 != (length = fis.read(buff))){

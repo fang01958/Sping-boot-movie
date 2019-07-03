@@ -52,11 +52,11 @@ public class PayService {
         for (String seat : seats) {
             String[] seatRowCol = seat.split("-");
 
-            //防止并发
-            Boolean aBoolean = redisService.cacheSeatInfo(sceneId, Integer.parseInt(seatRowCol[0]), Integer.parseInt(seatRowCol[1]));
-            if (!aBoolean){
-                throw new MyException("座位号已被选中，请重新选择");
-            }
+//            //防止并发
+//            Boolean aBoolean = redisService.cacheSeatInfo(sceneId, Integer.parseInt(seatRowCol[0]), Integer.parseInt(seatRowCol[1]));
+//            if (!aBoolean){
+//                throw new MyException("座位号已被选中，请重新选择");
+//            }
 
             //查询数据有没有
             OrderInfo info = orderInfoMapper.loadSelectedSeats(sceneId, Integer.parseInt(seatRowCol[0]), Integer.parseInt(seatRowCol[1]));
